@@ -10,6 +10,3 @@ rm -rf ~/.config/nvim/.git
 ```
 
 This is how you installed, so it's quick do not worry 
-```
-```
-```
