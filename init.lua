@@ -932,9 +932,9 @@ require("lazy").setup({
 				},
 			})
 			vim.cmd.colorscheme("tokyonight-night")
+		
 		end,
 	},
-	]]
 	{
 		"catppuccin/nvim",
 		priority = 1000,
@@ -950,6 +950,24 @@ require("lazy").setup({
 			})
 			print("importing the catppuccin")
 			vim.cmd.colorscheme("catppuccin-mocha")
+		end,
+	}
+	]]
+	{
+		"nyoom-engineering/oxocarbon.nvim",
+		priority = 1000,
+		config = function()
+			--[[require("oxocarbon").setup({
+				integrations = {
+					treesitter = true,
+					native_lsp = { enabled = true },
+					telescope = true,
+					which_key = true,
+				},
+			})]]
+			vim.cmd([[highlight Normal guibg=NONE ctermbg=NONE]])
+			vim.opt.background = "dark"
+			vim.cmd.colorscheme("oxocarbon")
 		end,
 	},
 
