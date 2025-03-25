@@ -413,6 +413,15 @@ require("lazy").setup({
 				--   },
 				-- },
 				-- pickers = {}
+				defaults = {
+					hidden = true, -- Show hidden files
+					file_ignore_patterns = { "%.git/" }, -- Ignore `.git/` folder
+				},
+				pickers = {
+					find_files = {
+						hidden = true, -- Needed here too for this picker specifically
+					},
+				},
 				extensions = {
 					["ui-select"] = {
 						require("telescope.themes").get_dropdown(),
@@ -953,24 +962,6 @@ require("lazy").setup({
 		end,
 	}
 	]]
-	{
-		"nyoom-engineering/oxocarbon.nvim",
-		priority = 1000,
-		config = function()
-			--[[require("oxocarbon").setup({
-				integrations = {
-					treesitter = true,
-					native_lsp = { enabled = true },
-					telescope = true,
-					which_key = true,
-				},
-			})]]
-			vim.cmd([[highlight Normal guibg=NONE ctermbg=NONE]])
-			vim.opt.background = "dark"
-			vim.cmd.colorscheme("oxocarbon")
-		end,
-	},
-
 	-- Highlight todo, notes, etc in comments
 	{
 		"folke/todo-comments.nvim",
