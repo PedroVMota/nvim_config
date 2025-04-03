@@ -96,8 +96,8 @@ local opts = { noremap = true, silent = true }
 -- Window split keybinds
 --
 keymap("n", "<leader>v", "<C-v>", opts)
-keymap("n", "<C-\\>", ":vsplit<CR>", opts) -- Vertical split
-keymap("n", "<C-_>", ":split<CR>", opts) -- Horizontal split
+keymap("n", "<leader>\\", ":vsplit<CR>", opts) -- Vertical split
+keymap("n", "<laeder>-", ":split<CR>", opts) -- Horizontal split
 
 -- Normal Mode: Move current line(s) down with count
 -- vim.keymap.set("n", "J", function()
@@ -951,6 +951,7 @@ require("lazy").setup({
 			})
 		end,
 	},
+	--[[
 	{
 		"folke/tokyonight.nvim",
 		priority = 1000,
@@ -964,7 +965,6 @@ require("lazy").setup({
 			vim.cmd.colorscheme("tokyonight-night")
 		end,
 	},
-	--[[
 	{
 		"catppuccin/nvim",
 		priority = 1000,
