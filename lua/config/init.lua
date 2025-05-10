@@ -1,0 +1,1 @@
+print("config init lua")
