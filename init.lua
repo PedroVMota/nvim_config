@@ -97,7 +97,7 @@ local opts = { noremap = true, silent = true }
 --
 keymap("n", "<leader>v", "<C-v>", opts)
 keymap("n", "<leader>\\", ":vsplit<CR>", opts) -- Vertical split
-keymap("n", "<laeder>-", ":split<CR>", opts) -- Horizontal split
+keymap("n", "<leader>-", ":split<CR>", opts) -- Horizontal split
 
 vim.g.have_nerd_font = false
 vim.opt.number = true
