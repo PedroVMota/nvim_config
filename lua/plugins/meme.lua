@@ -1,0 +1,3 @@
+return {
+	{ "famiu/feline.nvim" },
+}
