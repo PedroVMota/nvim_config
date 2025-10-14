@@ -3,28 +3,32 @@ return {
 	-- bar tab
 	--
 	{
-		"sainnhe/gruvbox-material",
-		lazy = false, -- Load theme immediately
-		priority = 1000, -- Load before other plugins
+		"folke/tokyonight.nvim",
+		lazy = false,
+		priority = 1000,
 		config = function()
-			-- Set up Gruvbox Material options before loading the colorscheme
-			vim.g.gruvbox_material_background = "soft" -- Options: 'hard', 'medium', 'soft'
-			vim.g.gruvbox_material_foreground = "material" -- Options: 'material', 'mix', 'original'
-			vim.g.gruvbox_material_enable_italic = 1 -- Enable italic comments
-			vim.g.gruvbox_material_enable_bold = 1 -- Enable bold
-			vim.g.gruvbox_material_disable_italic_comment = 0 -- Keep italic comments
-			vim.g.gruvbox_material_transparent_background = 0 -- Set to 1 for transparent background
-			vim.g.gruvbox_material_visual = "reverse" -- Options: 'grey background', 'green background', 'blue background', 'red background', 'reverse'
-			vim.g.gruvbox_material_menu_selection_background = "grey" -- Options: 'grey', 'red', 'orange', 'yellow', 'green', 'aqua', 'blue', 'purple'
-			vim.g.gruvbox_material_sign_column_background = "none" -- Options: 'none', 'grey'
-			vim.g.gruvbox_material_spell_foreground = "none" -- Options: 'none', 'colored'
-			vim.g.gruvbox_material_ui_contrast = "low" -- Options: 'low', 'high'
-			vim.g.gruvbox_material_float_style = "bright" -- Options: 'bright', 'dim'
-			vim.g.gruvbox_material_statusline_style = "material" -- Options: 'default', 'mix', 'original'
-			vim.g.gruvbox_material_better_performance = 1 -- Disable extra highlights for better performance
+			require("tokyonight").setup({
+				-- Configure Tokyo Night to be transparent
+				transparent = true,
+				terminal_colors = true,
+				styles = {
+					-- Style to be applied to different syntax groups
+					comments = { italic = true },
+					keywords = { italic = true },
+					functions = {},
+					variables = {},
+					-- Background styles. Can be "dark", "transparent" or "normal"
+					sidebars = "transparent", -- style for sidebars, see below
+					floats = "transparent", -- style for floating windows
+				},
+			})
 
-			-- Load the colorscheme
-			vim.cmd.colorscheme("gruvbox-material")
+			vim.cmd.colorscheme("tokyonight")
+
+			-- Additional transparency settings if needed
+			vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+			vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+			vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
 		end,
 	},
 	{
@@ -71,19 +75,71 @@ return {
 			version = "^1.0.0",
 		},
 	},
+	-- {
+	-- 	"nvim-neo-tree/neo-tree.nvim",
+	-- 	branch = "v3.x",
+	-- 	dependencies = {
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+	-- 		"MunifTanjim/nui.nvim",
+	-- 	},
+	-- 	config = function()
+	-- 		vim.api.nvim_set_keymap("n", "<C-e>", ":Neotree toggle<CR>", {
+	-- 			noremap = true,
+	-- 			silent = true,
+	-- 			desc = "Open File Explorer",
+	-- 		})
+	-- 	end,
+	-- },
 	{
-		"nvim-neo-tree/neo-tree.nvim",
-		branch = "v3.x",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-			"MunifTanjim/nui.nvim",
-		},
+		"vyfor/cord.nvim",
+		build = ":Cord update",
+		event = "VeryLazy",
 		config = function()
-			vim.api.nvim_set_keymap("n", "<C-e>", ":Neotree toggle<CR>", {
-				noremap = true,
-				silent = true,
-				desc = "Open File Explorer",
+			require("cord").setup({
+				usercmds = true,
+				log_level = "info",
+				timer = {
+					interval = 1500,
+					reset_on_idle = false,
+					reset_on_change = false,
+				},
+				editor = {
+					image = nil,
+					client_id = "365525338924646402",
+					tooltip = "The One True Text Editor",
+				},
+				display = {
+					show_time = true,
+					show_repository = true,
+					show_cursor_position = false,
+					swap_fields = false,
+					swap_icons = false,
+					workspace_blacklist = {},
+					theme = "default",
+				},
+				lsp = {
+					show_problem_count = false,
+					severity = 1,
+					scope = "workspace",
+				},
+				idle = {
+					enable = true,
+					show_status = true,
+					timeout = 300000,
+					disable_on_focus = true,
+					text = "Idle",
+					tooltip = "💤",
+				},
+				text = {
+					viewing = "My life <3",
+					editing = "My life <3",
+					file_browser = "Browsing files in {}",
+					plugin_manager = "Managing plugins in {}",
+					lsp_manager = "Configuring LSP in {}",
+					vcs = "Committing changes in {}",
+					workspace = "In {}",
+				},
 			})
 		end,
 	},
