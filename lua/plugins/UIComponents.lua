@@ -9,7 +9,6 @@ return {
 		config = function()
 			require("tokyonight").setup({
 				-- Configure Tokyo Night to be transparent
-				transparent = true,
 				terminal_colors = true,
 				styles = {
 					-- Style to be applied to different syntax groups
@@ -18,17 +17,15 @@ return {
 					functions = {},
 					variables = {},
 					-- Background styles. Can be "dark", "transparent" or "normal"
-					sidebars = "transparent", -- style for sidebars, see below
-					floats = "transparent", -- style for floating windows
 				},
 			})
 
 			vim.cmd.colorscheme("tokyonight")
 
 			-- Additional transparency settings if needed
-			vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
-			vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
-			vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
+			-- vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+			-- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
+			-- vim.api.nvim_set_hl(0, "SignColumn", { bg = "NONE" })
 		end,
 	},
 	{
