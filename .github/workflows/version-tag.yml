@@ -3,7 +3,7 @@ name: Auto Version Tag
 on:
   pull_request:
     types: [closed]
-    branches: [master, development]
+    branches: [origin]
 
 jobs:
   tag-version:
