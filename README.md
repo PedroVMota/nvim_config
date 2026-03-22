@@ -4,210 +4,239 @@
 <table>
   <tr>
     <td style="padding: 5px; border: 1px solid #ddd;">
-      <img src="assets/Usage.png" alt="Image 1" style="width:100%;">
+      <img src="assets/Usage.png" alt="Usage" style="width:100%;">
     </td>
     <td style="padding: 5px; border: 1px solid #ddd;">
-      <img src="assets/Search.png" alt="Image 2" style="width:100%;">
+      <img src="assets/Search.png" alt="Search" style="width:100%;">
     </td>
   </tr>
-  <!-- Add more rows here as needed -->
 </table>
 
+> If something goes wrong, create an issue and I will be right there to give you feedback and solve your problem.
 
+---
 
+## Installation
 
-### ‼️This is not finished‼️
-
-
-`In case of something goes wrong, create an issue and I will right there to be give you feed back and solve your prblem`
-
-# **New Era Configuration Guide**
-
-## 1. File Structure
+```bash
+git clone https://github.com/PedroVMota/NewEraNeovim.git
+cd NewEraNeovim
+chmod +x install.sh
+./install.sh
 ```
-nvim/
-  ├─ init.lua               # Main entrypoint and bootstrap
-  ├─ lazy-lock.json         # Plugin version lockfile
+
+The installer will:
+1. Detect your OS and package manager
+2. Check for sudo access
+3. Install dependencies (git, ripgrep, fd, node, cmake, etc.)
+4. Download and install the **latest stable Neovim** from GitHub
+5. Symlink this config to `~/.config/nvim` (with backup of existing config)
+
+### Uninstall
+
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
+```
+
+Choose to remove everything, config only, or Neovim only. Restores backups if available.
+
+---
+
+## File Structure
+
+```
+NewEraNeovim/
+  ├─ init.lua                     # Main entrypoint, settings, and lazy.nvim bootstrap
+  ├─ install.sh                   # Automated Neovim installer
+  ├─ uninstall.sh                 # Clean uninstaller
+  ├─ lazy-lock.json               # Plugin version lockfile
+  ├─ .github/
+  │   └─ workflows/
+  │       └─ version-tag.yml      # Auto semver tagging on PR merge
   └─ lua/
-      ├─ config/            # Plugin-specific settings and keymaps
-      │   ├─ init.lua       # Auto-loads all other config/*.lua files
-      │   ├─ lualine.lua    # lualine setup (statusline)
-      │   ├─ cmp.lua        # nvim-cmp mappings & setup
-      │   ├─ harpoon.lua    # harpoon keymaps & Telescope integration
-      │   └─ whichkey.lua   # (currently empty placeholder)
-      └─ plugins/           # Plugin declarations for lazy.nvim
-          ├─ core.lua       # Core UI plugins (file explorer, statusline, theme)
-          ├─ lazy.lua       # bootstrap dependency (plenary.nvim)
-          ├─ cmp.lua        # Autocompletion engine & sources
-          ├─ lsp.lua        # LSP management (lspconfig, mason)
-          ├─ Telescope.lua  # Fuzzy finder + fzf-native
-          ├─ GitSigns.lua   # Git gutter signs
-          ├─ bufferline.lua # Buffer/tabline management
-          ├─ harpoon.lua    # Mark & navigate files
-          ├─ whichkey.lua   # Dynamic keybinding hints
-          └─ noice.lua      # Noice.nvim UI enhancements (empty)
+      ├─ lib/
+      │   └─ init.lua             # Theme & environment customization library
+      ├─ config/                  # Plugin-specific configuration
+      │   ├─ init.lua
+      │   ├─ cmp.lua
+      │   ├─ harpoon.lua
+      │   ├─ lualine.lua
+      │   ├─ toggleterm.lua
+      │   └─ whichkey.lua
+      ├─ keymaps/                 # Keymap definitions
+      │   ├─ init.lua
+      │   ├─ general.lua
+      │   ├─ harpoon.lua
+      │   ├─ lsp.lua
+      │   └─ mason.lua
+      └─ plugins/                 # Plugin declarations (lazy.nvim specs)
+          ├─ Autocomplete.lua     # nvim-cmp + LuaSnip
+          ├─ Autoformater.lua     # conform.nvim (format on save)
+          ├─ CodeUtility.lua      # surround, comments, autopairs
+          ├─ FocusMode.lua        # zen-mode
+          ├─ GitSigns.lua         # Git gutter signs
+          ├─ Telescope.lua        # Fuzzy finder
+          ├─ Treesitter.lua       # Syntax highlighting
+          ├─ UIComponents.lua     # Theme (tokyonight), barbar, trouble
+          ├─ gitutils.lua         # Git conflict resolution
+          ├─ harpoon.lua          # File navigation marks
+          ├─ lsp.lua              # LSP + Mason
+          ├─ terminal.lua         # toggleterm
+          ├─ theme-keymaps.lua    # Keymaps for the theme library
+          ├─ trouble-nvim.lua     # Error lens
+          └─ which-key.lua        # Keybinding hints popup
 ```
----
-# Short Cuts
-
-## General (from [nvim/lua/keymaps/general.lua](nvim/lua/keymaps/general.lua))
-- `<leader>s` – Save file
-- `<C-h>` – Move to the split on the left
-- `<C-l>` – Move to the split on the right
-- `<C-j>` – Move to the split below
-- `<C-k>` – Move to the split above
-- `<leader>w\` – Open a vertical split
-- `<leader>w-` – Open a horizontal split
-- `<leader>qq` – Force quit the current buffer/file
-- `<leader>wq` – Write and quit the current buffer/file
-
-## LSP (from [nvim/lua/keymaps/lsp.lua](nvim/lua/keymaps/lsp.lua))
-- `gd` – Go to definition
-- `K` – Show hover information
-- `gr` – List references
-- `<leader>rn` – Rename symbol
-- `<leader>ca` – Code action
-- `[d` – Go to previous diagnostic
-- `]d` – Go to next diagnostic
-
-## Mason (from [nvim/lua/keymaps/mason.lua](nvim/lua/keymaps/mason.lua))
-- `<leader>m` – Open Mason
-- `<leader>mi` – MasonInstall
-- `<leader>mu` – MasonUpdate
-
-## Harpoon (from [nvim/lua/keymaps/harpoon.lua](nvim/lua/keymaps/harpoon.lua) & [nvim/lua/config/harpoon.lua](nvim/lua/config/harpoon.lua))
-- `<leader>a` – Add file to Harpoon list
-- `<C-e>` – Toggle/ Open Harpoon quick menu
-- `<C-h>` – Select Harpoon mark 1
-- `<C-t>` – Select Harpoon mark 2
-- `<C-n>` – Select Harpoon mark 3
-- `<C-s>` – Select Harpoon mark 4
-- `<C-S-P>` – Go to the previous Harpoon buffer
-- `<C-S-N>` – Go to the next Harpoon buffer
-
-## Telescope (from [nvim/lua/plugins/Telescope.lua](nvim/lua/plugins/Telescope.lua))
-- `<leader>sh` – Search help tags
-- `<leader>sk` – Search keymaps
-- `<leader>sf` – Find files
-- `<leader>ss` – List available Telescope pickers
-- `<leader>sw` – Search the word under the cursor
-- `<leader>sg` – Live grep search
-- `<leader>sd` – Search diagnostics
-- `<leader>sr` – Resume Telescope last picker
-- `<leader>s.` – Show recent files
-- `<leader><leader>` – List existing buffers
-- `<leader>saf` – Global live grep ("Search All Files")
-- `<leader>/` – Fuzzy search in the current buffer
-- `<leader>s/` – Live grep in open files
-- `<leader>sn` – Find Neovim configuration files
-
-## Autocompletion (from [nvim/lua/config/cmp.lua](nvim/lua/config/cmp.lua))
-- `<C-b>` – Scroll docs upward
-- `<C-f>` – Scroll docs downward
-- `<C-Space>` – Trigger completion
-- `<C-e>` – Abort completion
-- `<CR>` – Confirm selection
-
-
-## 2. Bootstrap & Core Settings (`init.lua`)
-
-- **Leader Key**: Set to space (`vim.g.mapleader = " "`).
-- **Clipboard**: Uses `unnamedplus` for system clipboard integration.
-- **Mouse**: Disabled (`vim.opt.mouse = ""`).
-- **Yank Highlight**: Highlights text on yank via an autocommand.
-- **Plugin Manager**: Clones and initializes **folke/lazy.nvim**, prepending it to `runtimepath`.
-- **Loader Calls**:
-  - `require("lazy").setup("plugins")` — Loads all files in `lua/plugins/`.
-  - `require("keymaps").load_keymaps()` — Loads per-plugin keymaps from `lua/config/`.
-  - `require("config").load_keymaps()` — (Redundant mirror of keymap loader).
 
 ---
 
-## 3. Plugin Management with lazy.nvim
+## Theme & Environment Library (`lua/lib`)
 
-All plugins are declared in individual Lua files under `lua/plugins/`. The bootstrap in `init.lua` uses `lazy.nvim` to install, update, and load them on demand (e.g., by events like `BufRead` or `VimEnter`). The `lazy-lock.json` file pins exact commit hashes for reproducible setups.
+A built-in function library for customizing the visual environment at runtime. Use it in your config or call functions via keymaps.
 
----
+```lua
+local lib = require("lib")
+```
 
-## 4. Plugin Configuration & Commands
-
-### 4.1 Core Plugins (`core.lua`)
-- **nvim-tree/nvim-tree.lua**
-  - A file explorer sidebar.
-  - **Dependencies**: `nvim-tree/nvim-web-devicons` for file icons.
-- **nvim-lualine/lualine.nvim**
-  - A fast, easy-to-configure status line.
-- **folke/tokyonight.nvim**
-  - A minimal, dark colorscheme.
-  - **Config**: Transparent background + sets `tokyonight` as the active theme.
-
-### 4.2 Autocompletion (`cmp.lua`)
-- **hrsh7th/nvim-cmp**: Core completion engine.
-- **Sources**:
-  - `cmp-nvim-lsp`, `cmp-buffer`, `cmp-path` — Standard LSP, buffer, and path completions.
-  - `LuaSnip` + `cmp_luasnip` — Snippet engine integration.
-- **Key Mappings** (Insert Mode):
-  - `<C-b>` / `<C-f>`: Scroll documentation.
-  - `<C-Space>`: Trigger completion menu.
-  - `<C-e>`: Abort completion.
-  - `<CR>`: Confirm selection.
-
-### 4.3 LSP Setup (`lsp.lua`)
-- **neovim/nvim-lspconfig**: Native LSP support.
-- **williamboman/mason.nvim**: Installer & manager for LSP servers, linters, and formatters.
-  - **Build Command**: `:MasonUpdate` on install/update.
-- **williamboman/mason-lspconfig.nvim**: Bridges `mason.nvim` with `nvim-lspconfig` for automatic setup.
-
-### 4.4 Fuzzy Finder (`Telescope.lua`)
-- **nvim-telescope/telescope.nvim**: Flexible fuzzy finder.
-- **Dependencies**: `nvim-lua/plenary.nvim` + optional `telescope-fzf-native.nvim` (with `make` build).
-- **Lazy-loading**: Triggered on `VimEnter` for responsiveness.
-- **Key Mappings**:
-  - `<leader>s/` — Live grep **within open files**.
-  - `<leader>sn` — Find files in your Neovim config directory.
-- **Usage Hints**:
-  - Insert mode `/<C-/>`, normal mode `?` for in-finder help.
-
-### 4.5 Git Integration (`GitSigns.lua`)
-- **lewis6991/gitsigns.nvim**: Git diff markers in the sign column.
-- **Events**: Loads on `BufRead` and `BufNewFile`.
-- **Options**: Custom symbols for add (`+`), change (`~`), delete (`_`), etc.
-
-### 4.6 Buffer Line (`bufferline.lua`)
-- **akinsho/bufferline.nvim**: Displays buffers as tabs.
-- **Dependencies**: `nvim-tree/nvim-web-devicons`.
-
-### 4.7 Harpoon (`harpoon.lua`)
-- **ThePrimeagen/harpoon**: Quick file marking and navigation.
-- **Branch**: `harpoon2`.
-- **Dependencies**: `plenary.nvim`.
-- **Key Mapping**:
-  - `<C-e>`: Opens a Telescope-powered Harpoon picker.
-
-### 4.8 Which-Key (`whichkey.lua`)
-- **folke/which-key.nvim**: Displays available keybindings in a popup.
-- **Loading Event**: `VimEnter`.
-- **Options**:
-  - Delay = 0 ms, icons dependent on `vim.g.have_nerd_font`.
-  - Groups for `<leader>s`, `<leader>t`, and `<leader>h` (git hunks).
-
-### 4.9 Noice (`noice.lua`)
-- **noice.nvim**: Enhanced UI for messages and cmdline (currently empty configuration).
+| Module | Functions | Description |
+|--------|-----------|-------------|
+| `lib.theme` | `set(name)`, `get()`, `pick()` | Change colorscheme, interactive picker |
+| `lib.transparency` | `enable()`, `disable()`, `toggle()`, `is_enabled()` | Transparent background |
+| `lib.hl` | `set()`, `get()`, `set_fg()`, `set_bg()`, `italic_comments()`, `apply()` | Manipulate highlight groups |
+| `lib.cursor` | `toggle_cursorline()`, `toggle_cursorcolumn()`, `set_style()` | Cursor appearance |
+| `lib.numbers` | `toggle()`, `toggle_relative()`, `hybrid()`, `none()`, `toggle_signcolumn()` | Line numbers & gutter |
+| `lib.statusline` | `hide()`, `global()`, `per_window()`, `toggle()` | Statusline visibility |
+| `lib.visual` | `toggle_wrap()`, `toggle_listchars()`, `toggle_spell()`, `toggle_background()`, `set_colorcolumn()`, `toggle_colorcolumn()`, `set_scrolloff()`, `toggle_conceal()` | Visual options |
+| `lib.font` | `set(name, size)`, `increase()`, `decrease()` | GUI font (Neovide, etc.) |
 
 ---
 
-## 5. Keymap Loader (`config/init.lua`)
+## Keybindings
 
-The loader scans `lua/config/` and requires each non-`init.lua` file, invoking any keymaps or settings defined. This keeps plugin declarations (in `lua/plugins/`) separate from key-binding logic.
+### Toggle & Appearance (`<leader>t`)
 
+All wired to the theme library and visible in **which-key**.
 
+| Key | Action |
+|-----|--------|
+| `<leader>tac` | Colorscheme picker |
+| `<leader>tab` | Toggle dark/light background |
+| `<leader>tat` | Toggle transparency |
+| `<leader>tai` | Italic comments on |
+| `<leader>taI` | Italic comments off |
+| `<leader>tl` | Toggle cursorline |
+| `<leader>tC` | Toggle cursorcolumn |
+| `<leader>tn` | Toggle line numbers |
+| `<leader>tr` | Toggle relative numbers |
+| `<leader>tg` | Toggle signcolumn |
+| `<leader>ts` | Toggle statusline |
+| `<leader>tw` | Toggle line wrap |
+| `<leader>ti` | Toggle listchars |
+| `<leader>tp` | Toggle spell check |
+| `<leader>tc` | Toggle colorcolumn (80) |
+| `<leader>te` | Toggle conceal level |
 
+### General
 
+| Key | Action |
+|-----|--------|
+| `<leader>\` | Vertical split |
+| `<leader>-` | Horizontal split |
+| `<C-h/j/k/l>` | Navigate between windows |
+| `<Esc>` | Clear search highlight |
+| `<leader>q` | Open diagnostic quickfix list |
+| `<C-z>` | Zen mode |
+| `<C-t>` | Toggle terminal |
 
-## 6. Customization & Extending
+### Search (`<leader>s`) — Telescope
 
-- **Adding Plugins**: Create a new file in `lua/plugins/` returning a Lazy.nvim spec.
-- **Keymaps**: Place any custom keybindings in `lua/config/<plugin>.lua`.
-- **Themes**: Install new colorschemes via Lazy and configure them in `core.lua`.
-- **LSP Servers**: Use `:Mason` UI to add new language servers, or configure manually with `nvim-lspconfig`.
+| Key | Action |
+|-----|--------|
+| `<leader>sf` | Find files |
+| `<leader>sg` | Live grep |
+| `<leader>sh` | Search help |
+| `<leader>sk` | Search keymaps |
+| `<leader>ss` | Search Telescope pickers |
+| `<leader>sw` | Search word under cursor |
+| `<leader>sd` | Search diagnostics |
+| `<leader>sr` | Resume last search |
+| `<leader>s.` | Recent files |
+| `<leader>st` | Search TODOs |
+| `<leader>/` | Fuzzy search in current buffer |
+| `<leader>s/` | Live grep in open files |
+| `<leader>sn` | Find Neovim config files |
+| `<leader><leader>` | List open buffers |
 
+### LSP
+
+| Key | Action |
+|-----|--------|
+| `gd` | Go to definition |
+| `gr` | Find references |
+| `gI` | Go to implementation |
+| `gD` | Go to declaration |
+| `<leader>D` | Type definition |
+| `<leader>ds` | Document symbols |
+| `<leader>ws` | Workspace symbols |
+| `<leader>rn` | Rename symbol |
+| `<leader>ca` | Code action |
+| `<leader>th` | Toggle inlay hints |
+| `<leader>f` | Format buffer |
+
+### Harpoon
+
+| Key | Action |
+|-----|--------|
+| `<leader>H` | Add file to Harpoon |
+| `<leader>h` | Harpoon quick menu |
+| `<leader>Hd` | Remove current file from Harpoon |
+| `<leader>1-5` | Jump to Harpoon file 1-5 |
+
+### Mason
+
+| Key | Action |
+|-----|--------|
+| `<leader>m` | Open Mason |
+
+---
+
+## Versioning
+
+This project uses **automatic semantic versioning**. When a PR is merged to the `origin` branch, a GitHub Actions workflow creates a version tag based on:
+
+| PR Label or Title Prefix | Bump |
+|--------------------------|------|
+| `major`, `breaking` | **Major** (v1.0.0 → v2.0.0) |
+| `minor`, `feature`, `feat` | **Minor** (v1.0.0 → v1.1.0) |
+| `patch`, `fix`, `chore`, `docs` | **Patch** (v1.0.0 → v1.0.1) |
+
+Default bump (no label/prefix): **patch**.
+
+---
+
+## Plugins
+
+| Plugin | Purpose |
+|--------|---------|
+| [tokyonight.nvim](https://github.com/folke/tokyonight.nvim) | Colorscheme |
+| [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) | Syntax highlighting |
+| [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) | LSP configuration |
+| [mason.nvim](https://github.com/williamboman/mason.nvim) | LSP/tool installer |
+| [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) | Autocompletion |
+| [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) | Fuzzy finder |
+| [harpoon](https://github.com/ThePrimeagen/harpoon) | File navigation |
+| [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim) | Git signs in gutter |
+| [git-conflict.nvim](https://github.com/akinsho/git-conflict.nvim) | Git conflict resolution |
+| [barbar.nvim](https://github.com/romgrk/barbar.nvim) | Buffer tabline |
+| [conform.nvim](https://github.com/stevearc/conform.nvim) | Auto-formatting |
+| [which-key.nvim](https://github.com/folke/which-key.nvim) | Keybinding hints |
+| [zen-mode.nvim](https://github.com/folke/zen-mode.nvim) | Focus/distraction-free mode |
+| [toggleterm.nvim](https://github.com/akinsho/toggleterm.nvim) | Terminal integration |
+| [todo-comments.nvim](https://github.com/folke/todo-comments.nvim) | Highlight TODO/FIX/HACK comments |
+| [trouble.nvim](https://github.com/folke/trouble.nvim) | Diagnostics list |
+| [error-lens.nvim](https://github.com/chikko80/error-lens.nvim) | Inline error display |
+| [mini.nvim](https://github.com/echasnovski/mini.nvim) | Surround, AI textobjects, statusline |
+| [LuaSnip](https://github.com/L3MON4D3/LuaSnip) | Snippet engine |
+| [nvim-surround](https://github.com/kylechui/nvim-surround) | Surround operations |
+| [Comment.nvim](https://github.com/numToStr/Comment.nvim) | Code commenting |
+| [nvim-autopairs](https://github.com/windwp/nvim-autopairs) | Auto-close brackets |
