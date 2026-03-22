@@ -267,6 +267,7 @@ setup_config() {
     esac
   fi
 
+  mkdir -p "$(dirname "$CONFIG_DIR")"
   ln -sf "$SCRIPT_DIR" "$CONFIG_DIR"
   success "Linked ${SCRIPT_DIR} -> ${CONFIG_DIR}"
 }
