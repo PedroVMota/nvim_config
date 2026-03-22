@@ -2,7 +2,7 @@
 local M = {}
 
 function M.load_keymaps()
-    local keymaps_dir = vim.fn.stdpath("config") .. "/lua/config"
+    local keymaps_dir = vim.fn.stdpath("config") .. "/lua/keymaps"
     local handle = vim.loop.fs_scandir(keymaps_dir)
     if not handle then return end
 
@@ -10,7 +10,7 @@ function M.load_keymaps()
         local name = vim.loop.fs_scandir_next(handle)
         if not name then break end
         if name:sub(-4) == ".lua" and name ~= "init.lua" then
-            require("config." .. name:gsub("%.lua$", ""))
+            require("keymaps." .. name:gsub("%.lua$", ""))
         end
     end
 end
