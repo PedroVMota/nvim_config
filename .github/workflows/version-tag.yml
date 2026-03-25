@@ -105,6 +105,43 @@ jobs:
 
           git push origin "$NEW_TAG"
 
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          NEW_TAG="${{ steps.new_version.outputs.tag }}"
+          PREV_TAG="${{ steps.latest.outputs.tag }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_NUM="${{ github.event.pull_request.number }}"
+
+          # Build commit log between previous tag and new tag
+          if [ "$PREV_TAG" = "v0.0.0" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s (%h)" "${PREV_TAG}..HEAD")
+          fi
+
+          NOTES="## What's Changed
+
+          **PR #${PR_NUM}: [${PR_TITLE}](${PR_URL})**
+
+          ### Commits
+          ${COMMITS}
+
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${NEW_TAG}"
+
+          # Write notes to file to preserve multiline content
+          echo "$NOTES" > "${{ runner.temp }}/release_notes.md"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NEW_TAG="${{ steps.new_version.outputs.tag }}"
+          gh release create "$NEW_TAG" \
+            --title "Release $NEW_TAG" \
+            --notes-file "${{ runner.temp }}/release_notes.md"
+
       - name: Summary
         run: |
           echo "## Version Tagged" >> "$GITHUB_STEP_SUMMARY"
