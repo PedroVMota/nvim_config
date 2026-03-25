@@ -72,20 +72,41 @@ return {
 			version = "^1.0.0",
 		},
 	},
-	-- {
-	-- 	"nvim-neo-tree/neo-tree.nvim",
-	-- 	branch = "v3.x",
-	-- 	dependencies = {
-	-- 		"nvim-lua/plenary.nvim",
-	-- 		"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-	-- 		"MunifTanjim/nui.nvim",
-	-- 	},
-	-- 	config = function()
-	-- 		vim.api.nvim_set_keymap("n", "<C-e>", ":Neotree toggle<CR>", {
-	-- 			noremap = true,
-	-- 			silent = true,
-	-- 			desc = "Open File Explorer",
-	-- 		})
-	-- 	end,
-	-- },
+	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons",
+			"MunifTanjim/nui.nvim",
+		},
+		config = function()
+			require("neo-tree").setup({
+				window = {
+					position = "left",
+					width = 30,
+					mappings = {
+						["a"] = { "add", config = { show_path = "relative" } }, -- create file (append / for folder)
+						["A"] = { "add_directory", config = { show_path = "relative" } }, -- create folder
+						["d"] = "delete",
+						["r"] = "rename",
+						["m"] = { "move", config = { show_path = "relative" } },
+						["c"] = { "copy", config = { show_path = "relative" } },
+						["y"] = "copy_to_clipboard",
+						["x"] = "cut_to_clipboard",
+						["p"] = "paste_from_clipboard",
+					},
+				},
+				filesystem = {
+					follow_current_file = { enabled = true },
+					hijack_netrw_behavior = "open_current",
+				},
+			})
+			vim.keymap.set("n", "<leader>sft", ":Neotree toggle<CR>", {
+				noremap = true,
+				silent = true,
+				desc = "[S]how [F]older [T]ree",
+			})
+		end,
+	},
 }
