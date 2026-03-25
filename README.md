@@ -32,6 +32,10 @@ The installer will:
 4. Download and install the **latest stable Neovim** from GitHub
 5. Symlink this config to `~/.config/nvim` (with backup of existing config)
 
+### WSL Users
+
+Clipboard integration is automatic on WSL. Yanking (`y`, `yy`, `dd`, `x`, etc.) writes to the Windows clipboard via `clip.exe`, and pasting reads from it via `powershell.exe`. No extra tools required — it just works.
+
 ### Uninstall
 
 ```bash
@@ -148,6 +152,32 @@ All wired to the theme library and visible in **which-key**.
 | `<C-z>` | Zen mode |
 | `<C-t>` | Toggle terminal |
 
+### File Explorer (`<leader>sft`) — Neo-tree
+
+| Key | Action |
+|-----|--------|
+| `<leader>sft` | Toggle file explorer tree |
+
+**Inside the tree:**
+
+| Key | Action |
+|-----|--------|
+| `a` | Create file (type name + Enter) |
+| `A` | Create folder |
+| `d` | Delete file/folder |
+| `r` | Rename file/folder |
+| `m` | Move to another path |
+| `c` | Copy to another path |
+| `y` | Yank (copy) to clipboard |
+| `x` | Cut to clipboard |
+| `p` | Paste from clipboard |
+| `Enter` | Open file |
+| `h/l` | Collapse/expand directory |
+
+> The tree always follows the file currently open in the active buffer.
+
+---
+
 ### Search (`<leader>s`) — Telescope
 
 | Key | Action |
@@ -240,3 +270,4 @@ Default bump (no label/prefix): **patch**.
 | [nvim-surround](https://github.com/kylechui/nvim-surround) | Surround operations |
 | [Comment.nvim](https://github.com/numToStr/Comment.nvim) | Code commenting |
 | [nvim-autopairs](https://github.com/windwp/nvim-autopairs) | Auto-close brackets |
+| [neo-tree.nvim](https://github.com/nvim-neo-tree/neo-tree.nvim) | File explorer tree |
