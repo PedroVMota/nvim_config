@@ -9,4 +9,9 @@ return {
       config = true,
     },
     { "williamboman/mason-lspconfig.nvim" },
+    {
+      "j-hui/fidget.nvim",
+      event = "LspAttach",
+      opts = {},
+    },
   }
