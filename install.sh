@@ -224,7 +224,9 @@ install_neovim() {
   $SUDO rm -rf "${NVIM_INSTALL_DIR}/share/nvim"
   $SUDO rm -f "${NVIM_INSTALL_DIR}/bin/nvim"
 
-  $SUDO cp -r "${extracted_dir}/"* "${NVIM_INSTALL_DIR}/"
+  # Use tar to merge files; this follows destination symlinks
+  # (e.g., /usr/local/share/man -> /usr/share/man on Arch Linux)
+  tar -C "${extracted_dir}" -cf - . | $SUDO tar -C "${NVIM_INSTALL_DIR}" -xf -
 
   success "Neovim ${LATEST_VERSION} installed to ${NVIM_INSTALL_DIR}/bin/nvim"
 }
