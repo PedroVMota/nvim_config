@@ -33,10 +33,8 @@ local on_attach = function(_, bufnr)
 end
 
 -- Configuração básica para cada servidor
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    lspconfig[server_name].setup {
-      on_attach = on_attach,
-    }
-  end,
-}
+for _, server_name in ipairs(servers) do
+  lspconfig[server_name].setup {
+    on_attach = on_attach,
+  }
+end
