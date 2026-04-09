@@ -140,7 +140,136 @@ install_deps() {
     $SUDO npm install -g tree-sitter-cli
   fi
 
+  # -- Language Toolchains -----------------------------------------------------
+  install_language_toolchains
+
   success "Dependencies installed."
+}
+
+# -- Language Toolchains -------------------------------------------------------
+install_language_toolchains() {
+  info "Installing language toolchains (Go, Rust, Terraform)..."
+
+  # Go
+  if ! command -v go &>/dev/null; then
+    info "Installing Go..."
+    local go_version
+    go_version="$(curl -sL 'https://go.dev/VERSION?m=text' | head -1)"
+    local arch
+    arch="$(uname -m)"
+    case "$arch" in
+      x86_64)  arch="amd64" ;;
+      aarch64|arm64) arch="arm64" ;;
+    esac
+    local go_os="linux"
+    [[ "$OS" == "macos" ]] && go_os="darwin"
+    curl -Lo "${TMP_DIR}/go.tar.gz" "https://go.dev/dl/${go_version}.${go_os}-${arch}.tar.gz"
+    $SUDO rm -rf /usr/local/go
+    $SUDO tar -C /usr/local -xzf "${TMP_DIR}/go.tar.gz"
+    export PATH="/usr/local/go/bin:$PATH"
+    success "Go ${go_version} installed."
+  else
+    success "Go already installed: $(go version)"
+  fi
+
+  # Go tools (goimports)
+  if command -v go &>/dev/null; then
+    if ! command -v goimports &>/dev/null; then
+      info "Installing goimports..."
+      go install golang.org/x/tools/cmd/goimports@latest
+    fi
+  fi
+
+  # Rust
+  if ! command -v rustc &>/dev/null; then
+    info "Installing Rust via rustup..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
+    export PATH="$HOME/.cargo/bin:$PATH"
+    success "Rust installed: $(rustc --version)"
+  else
+    success "Rust already installed: $(rustc --version)"
+  fi
+
+  # Terraform
+  if ! command -v terraform &>/dev/null; then
+    info "Installing Terraform..."
+    case "$PKG_MANAGER" in
+      brew)
+        brew tap hashicorp/tap
+        brew install hashicorp/tap/terraform
+        ;;
+      *)
+        # Install via HashiCorp's official GPG key and repo (Debian/Ubuntu),
+        # or download binary for other distros
+        if [[ "$PKG_MANAGER" == "apt" ]]; then
+          $SUDO apt-get install -y -qq gnupg software-properties-common
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | $SUDO gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg 2>/dev/null
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | $SUDO tee /etc/apt/sources.list.d/hashicorp.list >/dev/null
+          $SUDO apt-get update -qq
+          $SUDO apt-get install -y -qq terraform
+        elif [[ "$PKG_MANAGER" == "dnf" ]]; then
+          $SUDO dnf install -y -q dnf-plugins-core
+          $SUDO dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+          $SUDO dnf install -y -q terraform
+        elif [[ "$PKG_MANAGER" == "pacman" ]]; then
+          $SUDO pacman -S --noconfirm terraform
+        else
+          # Fallback: download binary
+          local tf_version
+          tf_version="$(curl -sL https://checkpoint-api.hashicorp.com/v1/check/terraform | grep -o '"current_version":"[^"]*"' | cut -d'"' -f4)"
+          local arch
+          arch="$(uname -m)"
+          case "$arch" in
+            x86_64)  arch="amd64" ;;
+            aarch64|arm64) arch="arm64" ;;
+          esac
+          local tf_os="linux"
+          curl -Lo "${TMP_DIR}/terraform.zip" "https://releases.hashicorp.com/terraform/${tf_version}/terraform_${tf_version}_${tf_os}_${arch}.zip"
+          unzip -o "${TMP_DIR}/terraform.zip" -d "${TMP_DIR}"
+          $SUDO mv "${TMP_DIR}/terraform" /usr/local/bin/terraform
+          $SUDO chmod +x /usr/local/bin/terraform
+        fi
+        ;;
+    esac
+    success "Terraform installed: $(terraform --version | head -1)"
+  else
+    success "Terraform already installed: $(terraform --version | head -1)"
+  fi
+
+  # Prettier (for YAML/GitHub Actions formatting)
+  if ! command -v prettier &>/dev/null; then
+    info "Installing prettier via npm..."
+    $SUDO npm install -g prettier
+    success "Prettier installed."
+  else
+    success "Prettier already installed."
+  fi
+
+  # actionlint (GitHub Actions linter)
+  if ! command -v actionlint &>/dev/null; then
+    info "Installing actionlint..."
+    if command -v go &>/dev/null; then
+      go install github.com/rhysd/actionlint/cmd/actionlint@latest
+    elif [[ "$PKG_MANAGER" == "brew" ]]; then
+      brew install actionlint
+    else
+      local al_version
+      al_version="$(curl -sL https://api.github.com/repos/rhysd/actionlint/releases/latest | grep '"tag_name"' | head -1 | sed -E 's/.*"v([^"]+)".*/\1/')"
+      local arch
+      arch="$(uname -m)"
+      case "$arch" in
+        x86_64)  arch="amd64" ;;
+        aarch64|arm64) arch="arm64" ;;
+      esac
+      curl -Lo "${TMP_DIR}/actionlint.tar.gz" "https://github.com/rhysd/actionlint/releases/download/v${al_version}/actionlint_${al_version}_linux_${arch}.tar.gz"
+      tar -xzf "${TMP_DIR}/actionlint.tar.gz" -C "${TMP_DIR}"
+      $SUDO mv "${TMP_DIR}/actionlint" /usr/local/bin/actionlint
+      $SUDO chmod +x /usr/local/bin/actionlint
+    fi
+    success "actionlint installed."
+  else
+    success "actionlint already installed."
+  fi
 }
 
 # -- Fetch Latest Neovim Version ---------------------------------------------
@@ -313,8 +442,9 @@ main() {
   echo ""
   echo -e "${BOLD}This will:${NC}"
   echo "  1. Install dependencies (git, ripgrep, fd, node, etc.)"
-  echo "  2. Download and install Neovim ${LATEST_VERSION}"
-  echo "  3. Link this config to ~/.config/nvim"
+  echo "  2. Install language toolchains (Go, Rust, Terraform, prettier, actionlint)"
+  echo "  3. Download and install Neovim ${LATEST_VERSION}"
+  echo "  4. Link this config to ~/.config/nvim"
   echo ""
   read -rp "Proceed? [Y/n] " proceed
   proceed="${proceed:-Y}"

@@ -13,15 +13,23 @@ return {
 			ts.install({
 				"bash",
 				"c",
+				"cpp",
 				"diff",
+				"go",
+				"gomod",
+				"gosum",
+				"hcl",
 				"html",
 				"lua",
 				"luadoc",
 				"markdown",
 				"markdown_inline",
 				"query",
+				"rust",
+				"terraform",
 				"vim",
 				"vimdoc",
+				"yaml",
 			})
 		else
 			vim.notify(

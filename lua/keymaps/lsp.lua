@@ -7,7 +7,16 @@ local mason_lspconfig = require("mason-lspconfig")
 mason.setup()
 
 -- LSPs que devem ser instalados automaticamente
-local servers = { "clangd", "phpactor", "pyright", "lua_ls" }
+local servers = {
+  "clangd",       -- C/C++
+  "gopls",        -- Go
+  "lua_ls",       -- Lua
+  "phpactor",     -- PHP
+  "pyright",      -- Python
+  "rust_analyzer", -- Rust
+  "terraformls",  -- Terraform
+  "yamlls",       -- YAML / GitHub Actions
+}
 
 -- Configura o mason-lspconfig
 mason_lspconfig.setup {
@@ -33,8 +42,42 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
--- Configuração básica para cada servidor usando a API nativa do Neovim 0.11+
+-- Configuração específica por servidor
+local server_settings = {
+  yamlls = {
+    settings = {
+      yaml = {
+        schemas = {
+          ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+          ["https://json.schemastore.org/github-action.json"] = "/action.{yml,yaml}",
+        },
+        validate = true,
+        completion = true,
+        hover = true,
+      },
+    },
+  },
+  rust_analyzer = {
+    settings = {
+      ["rust-analyzer"] = {
+        checkOnSave = { command = "clippy" },
+        cargo = { allFeatures = true },
+      },
+    },
+  },
+  gopls = {
+    settings = {
+      gopls = {
+        analyses = { unusedparams = true },
+        staticcheck = true,
+        gofumpt = true,
+      },
+    },
+  },
+}
+
+-- Configuração para cada servidor usando a API nativa do Neovim 0.11+
 for _, server_name in ipairs(servers) do
-  vim.lsp.config(server_name, {})
+  vim.lsp.config(server_name, server_settings[server_name] or {})
 end
 vim.lsp.enable(servers)
