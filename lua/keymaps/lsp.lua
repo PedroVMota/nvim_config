@@ -37,8 +37,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     map("n", "gr", vim.lsp.buf.references, "Referências")
     map("n", "<leader>rn", vim.lsp.buf.rename, "Renomear símbolo")
     map("n", "<leader>ca", vim.lsp.buf.code_action, "Ações de código")
-    map("n", "[d", vim.diagnostic.goto_prev, "Diagnóstico anterior")
-    map("n", "]d", vim.diagnostic.goto_next, "Próximo diagnóstico")
+    map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Diagnóstico anterior")
+    map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Próximo diagnóstico")
   end,
 })
 
