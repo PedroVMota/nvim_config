@@ -15,7 +15,14 @@ return {
 		vim.api.nvim_create_autocmd("FileType", {
 			group = vim.api.nvim_create_augroup("newera-treesitter", { clear = true }),
 			callback = function(ev)
-				pcall(vim.treesitter.start, ev.buf)
+				local ok, err = pcall(vim.treesitter.start, ev.buf)
+				if not ok then
+					require("lib.logger").warn(
+						"treesitter",
+						"Failed to start treesitter for filetype " .. (vim.bo[ev.buf].filetype or "?"),
+						err
+					)
+				end
 			end,
 		})
 	end,

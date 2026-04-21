@@ -19,6 +19,12 @@ vim.opt.winbar = ""
 
 print("Loadding:")
 
+-- Load error logger before anything else so every subsequent error is captured
+local log = require("lib.logger")
+log.install_notify_interceptor()
+log.check_lazy_errors()
+log.setup_commands()
+log.info("init", "Neovim startup begin")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
@@ -41,11 +47,14 @@ end,
 -- Carrega os plugins da pasta lua/plugins/
 local function benchmark(name, fn)
     local start = vim.uv.hrtime()
-    fn()
+    local ok, err = pcall(fn)
     local elapsed = (vim.uv.hrtime() - start) / 1e6  -- convert ns to ms
-    -- print(string.format("%s took %.2f ms", name, elapsed))
-
-    vim.notify(string.format("%s took %.2f ms", name, elapsed), { title = "Loadding",})
+    if not ok then
+      log.error("init/" .. name, "Load phase failed", err)
+      vim.notify(string.format("%s FAILED: %s", name, tostring(err)), vim.log.levels.ERROR, { title = "Loading" })
+    else
+      vim.notify(string.format("%s took %.2f ms", name, elapsed), { title = "Loadding",})
+    end
 end
 
 benchmark("lazy.nvim setup", function()
