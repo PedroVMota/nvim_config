@@ -3,47 +3,19 @@ return {
 	branch = "main",
 	build = ":TSUpdate",
 	config = function()
-		local ts = require("nvim-treesitter")
-		ts.setup({
-			install_dir = vim.fn.stdpath("data") .. "/site",
-		})
+		-- New API: no more setup(), parsers are installed directly
+		require("nvim-treesitter").install({
+			"bash", "c", "cpp", "diff", "go", "gomod", "gosum",
+			"hcl", "html", "lua", "luadoc", "markdown",
+			"markdown_inline", "query", "rust", "terraform",
+			"vim", "vimdoc", "yaml",
+		}):wait()
 
-		-- Install parsers (only if tree-sitter CLI is available)
-		if vim.fn.executable("tree-sitter") == 1 then
-			ts.install({
-				"bash",
-				"c",
-				"cpp",
-				"diff",
-				"go",
-				"gomod",
-				"gosum",
-				"hcl",
-				"html",
-				"lua",
-				"luadoc",
-				"markdown",
-				"markdown_inline",
-				"query",
-				"rust",
-				"terraform",
-				"vim",
-				"vimdoc",
-				"yaml",
-			})
-		else
-			vim.notify(
-				"tree-sitter CLI not found. Run install.sh or: npm install -g tree-sitter-cli",
-				vim.log.levels.WARN,
-				{ title = "NewEraNeovim" }
-			)
-		end
-
-		-- Enable treesitter highlight for all filetypes
+		-- Highlighting is enabled per-filetype via native Neovim API
 		vim.api.nvim_create_autocmd("FileType", {
 			group = vim.api.nvim_create_augroup("newera-treesitter", { clear = true }),
-			callback = function()
-				pcall(vim.treesitter.start)
+			callback = function(ev)
+				pcall(vim.treesitter.start, ev.buf)
 			end,
 		})
 	end,

@@ -1,9 +1,6 @@
 -- /lua/config/lsp.lua
 
 local mason = require("mason")
-local mason_lspconfig = require("mason-lspconfig")
-
--- Inicializa Mason
 mason.setup()
 
 -- LSPs que devem ser instalados automaticamente
@@ -16,12 +13,6 @@ local servers = {
   "rust_analyzer", -- Rust
   "terraformls",  -- Terraform
   "yamlls",       -- YAML / GitHub Actions
-}
-
--- Configura o mason-lspconfig
-mason_lspconfig.setup {
-  ensure_installed = servers,
-  automatic_installation = true,
 }
 
 -- Atalhos padrão ao anexar um LSP

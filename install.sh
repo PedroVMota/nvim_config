@@ -134,12 +134,6 @@ install_deps() {
       ;;
   esac
 
-  # Install tree-sitter CLI (required by nvim-treesitter to compile parsers)
-  if ! command -v tree-sitter &>/dev/null; then
-    info "Installing tree-sitter-cli via npm..."
-    $SUDO npm install -g tree-sitter-cli
-  fi
-
   # -- Language Toolchains -----------------------------------------------------
   install_language_toolchains
 
