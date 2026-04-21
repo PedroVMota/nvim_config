@@ -134,12 +134,6 @@ install_deps() {
       ;;
   esac
 
-  # Install tree-sitter CLI (required by nvim-treesitter to compile parsers)
-  if ! command -v tree-sitter &>/dev/null; then
-    info "Installing tree-sitter-cli via npm..."
-    $SUDO npm install -g tree-sitter-cli
-  fi
-
   # -- Language Toolchains -----------------------------------------------------
   install_language_toolchains
 
@@ -272,6 +266,30 @@ install_language_toolchains() {
   fi
 }
 
+# -- Minimum Neovim Version ---------------------------------------------------
+NVIM_MIN_MAJOR=12
+NVIM_MIN_MINOR=1
+
+check_nvim_version() {
+  local version_str="$1"
+  # Extract major.minor from a string like "v12.1.0" or "12.1.0"
+  local major minor
+  major=$(echo "$version_str" | sed -E 's/v?([0-9]+)\..*/\1/')
+  minor=$(echo "$version_str" | sed -E 's/v?[0-9]+\.([0-9]+)\..*/\1/')
+
+  if [[ -z "$major" || -z "$minor" ]]; then
+    return 1
+  fi
+
+  if (( major > NVIM_MIN_MAJOR )); then
+    return 0
+  elif (( major == NVIM_MIN_MAJOR && minor >= NVIM_MIN_MINOR )); then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # -- Fetch Latest Neovim Version ---------------------------------------------
 get_latest_version() {
   info "Fetching latest Neovim release..."
@@ -280,6 +298,12 @@ get_latest_version() {
 
   if [[ -z "$LATEST_VERSION" ]]; then
     error "Could not fetch latest Neovim version from GitHub."
+    exit 1
+  fi
+
+  if ! check_nvim_version "$LATEST_VERSION"; then
+    error "NewEraNeovim requires Neovim >= ${NVIM_MIN_MAJOR}.${NVIM_MIN_MINOR}.0"
+    error "Latest available version is ${LATEST_VERSION}, which does not meet the minimum requirement."
     exit 1
   fi
 

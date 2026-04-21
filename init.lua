@@ -1,6 +1,15 @@
 -- init.lua
 -- Bootstrap do lazy.nvim
 
+-- Neovim 12.1+ is required (vim.uv, vim.diagnostic.jump)
+if vim.fn.has("nvim-0.11") ~= 1 then
+  vim.notify(
+    "NewEraNeovim requires Neovim 12.1 or later. Please upgrade: https://neovim.io",
+    vim.log.levels.ERROR
+  )
+  return
+end
+
 vim.g.mapleader=" "
 -- Yank para o clipboard
 vim.opt.clipboard="unnamedplus"
@@ -12,7 +21,7 @@ print("Loadding:")
 
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({"git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable",
                    lazypath})
 end
@@ -31,9 +40,9 @@ end,
 
 -- Carrega os plugins da pasta lua/plugins/
 local function benchmark(name, fn)
-    local start = vim.loop.hrtime()
+    local start = vim.uv.hrtime()
     fn()
-    local elapsed = (vim.loop.hrtime() - start) / 1e6  -- convert ns to ms
+    local elapsed = (vim.uv.hrtime() - start) / 1e6  -- convert ns to ms
     -- print(string.format("%s took %.2f ms", name, elapsed))
 
     vim.notify(string.format("%s took %.2f ms", name, elapsed), { title = "Loadding",})
